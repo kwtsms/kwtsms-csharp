@@ -145,7 +145,7 @@ It serializes the payload to JSON, POSTs it to `https://www.kwtsms.com/API/{endp
 - **DLR for Kuwait numbers**: returns `ERR019` or `ERR021` — delivery reports are only available for international numbers.
 - **Phone numbers**: digits only, international format, no `+` or `00` prefix.
 - **Timestamp**: all `unix-timestamp` values are GMT+3 (Asia/Kuwait), not UTC.
-- **Rate limit**: max 5 requests/second. The example calls endpoints sequentially so this is not an issue.
+- **Rate limit**: max 10 requests/second per IP. The example calls endpoints sequentially so this is not an issue.
 
 ## Error Codes
 
