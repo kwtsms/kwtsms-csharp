@@ -140,7 +140,7 @@ It serializes the payload to JSON, POSTs it to `https://www.kwtsms.com/API/{endp
 
 ## Key Points
 
-- **Test mode** (`"test": "1"`): messages are queued but not delivered. No credits consumed. Delete from queue on your dashboard to recover tentatively held credits.
+- **Test mode** (`"test": "1"`): messages are queued but not delivered. Their credits are held until you delete them from the Sending Queue in your kwtsms.com account.
 - **Status in test mode**: returns `ERR030` (message stuck in queue) — this is normal.
 - **DLR for Kuwait numbers**: returns `ERR019` or `ERR021` — delivery reports are only available for international numbers.
 - **Phone numbers**: digits only, international format, no `+` or `00` prefix.
@@ -157,7 +157,7 @@ It serializes the payload to JSON, POSTs it to `https://www.kwtsms.com/API/{endp
 | ERR010 | Zero balance |
 | ERR019 | No DLR reports found |
 | ERR025 | Invalid number format |
-| ERR028 | Must wait 15s before sending to same number again |
+| ERR028 | Sent to the same number too soon. |
 | ERR030 | Message stuck in queue (normal for test mode) |
 
 See the [full error code reference](https://www.kwtsms.com/doc/KwtSMS.com_API_Documentation_v41.pdf) for all codes.

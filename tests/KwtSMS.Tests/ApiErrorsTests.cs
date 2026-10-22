@@ -120,7 +120,8 @@ namespace KwtSMS.Tests
 
             var enriched = ApiErrors.EnrichError(data);
 
-            Assert.Contains("15 seconds", enriched["action"]?.ToString());
+            // 2026-10-22 15:36 +03: ERR028 action no longer states a fixed 15 s window.
+            Assert.Contains("too soon", enriched["action"]?.ToString());
         }
 
         [Fact]

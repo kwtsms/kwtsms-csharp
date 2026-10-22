@@ -6,9 +6,10 @@ using KwtSMS;
 
 namespace KwtSMS.Tests
 {
+    // 2026-10-22 15:36 +03: summary corrected, test sends hold credits until deleted from the queue.
     /// <summary>
     /// Real API integration tests. Skipped if CSHARP_USERNAME / CSHARP_PASSWORD are not set.
-    /// Always uses test_mode=true (no credits consumed, messages not delivered).
+    /// Always uses test_mode=true (not delivered; delete the queued test messages from the Sending Queue to release their held credits).
     /// </summary>
     [Trait("Category", "Integration")]
     [Collection("HttpClient")]

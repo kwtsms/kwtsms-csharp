@@ -20,7 +20,7 @@
 
 ## Running Integration Tests
 
-Integration tests hit the live kwtSMS API with `test_mode=true` (no credits consumed):
+Integration tests hit the live kwtSMS API with `test_mode=true` (not delivered; delete the queued test messages from the Sending Queue to release their held credits):
 
 ```bash
 export CSHARP_USERNAME=csharp_username

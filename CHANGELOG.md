@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- `SendWithRetry()`: retry on ERR028 is now off by default (`maxRetries` defaults to 0) and the wait is a `waitSeconds` parameter (default 10) instead of a hardcoded 16 seconds. ERR028 is opt-in per account (Duplicate SMS protection) and its window is set per account.
+- ERR028 action text no longer states a fixed 15-second wait.
+
+### Docs
+
+- Test mode: test messages are queued but not delivered. Their credits are held until you delete them from the Sending Queue in your kwtsms.com account (previously documented as "no credits consumed").
+
 ## [0.6.0] - 2026-03-13
 
 ### Fixed

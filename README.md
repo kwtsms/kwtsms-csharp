@@ -134,9 +134,11 @@ The `Send` method automatically:
 ### Send with Retry (ERR028)
 
 ```csharp
-// Automatically retries on ERR028 (rate limit), sleeping 16 seconds between attempts
-var result = sms.SendWithRetry("96598765432", "OTP: 123456", maxRetries: 3);
+// Retry on ERR028 is off by default (maxRetries: 0). Opt in and set the wait to your account's window.
+var result = sms.SendWithRetry("96598765432", "OTP: 123456", maxRetries: 3, waitSeconds: 10);
 ```
+
+ERR028 only happens when Duplicate SMS protection is enabled in your account's API settings. When it is on and any number in the request was sent the same message within the account's window (10 seconds by default, configurable per account), the whole request is rejected with ERR028 and nothing is charged.
 
 ### Check Balance
 
@@ -403,7 +405,7 @@ BEFORE GOING LIVE:
 # Unit + mock tests (no credentials needed)
 dotnet test --filter "Category!=Integration"
 
-# Integration tests (real API, test mode, no credits consumed)
+# Integration tests (real API, test mode: not delivered; delete the queued test messages from the Sending Queue to release their held credits)
 export CSHARP_USERNAME=csharp_username
 export CSHARP_PASSWORD=csharp_password
 dotnet test --filter "Category=Integration"
@@ -428,7 +430,7 @@ Check the **Sending Queue** at [kwtsms.com](https://www.kwtsms.com/login/). If y
 
 **2. What is the difference between Test mode and Live mode?**
 
-**Test mode** (`KWTSMS_TEST_MODE=1`) sends your message to the kwtSMS queue but does NOT deliver it to the handset. No SMS credits are consumed. Use this during development. **Live mode** (`KWTSMS_TEST_MODE=0`) delivers the message for real and deducts credits. Always develop in test mode and switch to live only when ready for production.
+**Test mode** (`KWTSMS_TEST_MODE=1`) sends your message to the kwtSMS queue but does NOT deliver it to the handset. Its credits are held until you delete it from the Sending Queue in your kwtsms.com account. Use this during development. **Live mode** (`KWTSMS_TEST_MODE=0`) delivers the message for real and deducts credits. Always develop in test mode and switch to live only when ready for production.
 
 **3. What is a Sender ID and why should I not use "KWT-SMS" in production?**
 

@@ -245,7 +245,7 @@ namespace KwtSMS.Tests
                 {
                     result = "ERROR",
                     code = "ERR028",
-                    description = "Must wait 15s"
+                    description = "Sent to the same number too soon"
                 });
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -258,7 +258,8 @@ namespace KwtSMS.Tests
             Assert.Equal("ERROR", result.Result);
             Assert.Equal("ERR028", result.Code);
             Assert.NotNull(result.Action);
-            Assert.Contains("15 seconds", result.Action);
+            // 2026-10-22 15:36 +03: ERR028 action no longer states a fixed 15 s window.
+            Assert.Contains("too soon", result.Action);
         }
 
         [Fact]

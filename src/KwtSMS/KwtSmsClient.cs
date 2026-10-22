@@ -21,13 +21,14 @@ namespace KwtSMS
         private double? _cachedBalance;
         private double? _cachedPurchased;
 
+        // 2026-10-22 15:36 +03: testMode doc corrected, test sends hold credits until deleted from the queue.
         /// <summary>
         /// Create a new kwtSMS client.
         /// </summary>
         /// <param name="username">API username (not your account mobile number).</param>
         /// <param name="password">API password.</param>
         /// <param name="senderId">Default sender ID shown on recipient's phone. Default: "KWT-SMS" (testing only).</param>
-        /// <param name="testMode">When true, messages queue but are not delivered. No credits consumed.</param>
+        /// <param name="testMode">When true, messages queue but are not delivered. Their credits are held until you delete them from the Sending Queue in your kwtsms.com account.</param>
         /// <param name="logFile">JSONL log file path. Empty string to disable logging.</param>
         public KwtSmsClient(
             string username,
@@ -319,28 +320,33 @@ namespace KwtSMS
             }
         }
 
+        // 2026-10-22 15:36 +03: retry off by default and wait is a parameter (default 10 s), was a hardcoded 16 s; ERR028 is opt-in with a per-account window.
         /// <summary>
-        /// Send SMS with automatic retry on ERR028 (rate limit).
-        /// Sleeps 16 seconds between retries.
+        /// Send SMS with optional retry on ERR028 (duplicate SMS protection).
+        /// Retry is off by default (maxRetries = 0): ERR028 is returned like any other error.
         /// </summary>
         /// <param name="mobile">Phone number(s).</param>
         /// <param name="message">SMS message text.</param>
         /// <param name="sender">Optional sender ID override.</param>
-        /// <param name="maxRetries">Maximum number of retries (default 3).</param>
+        /// <param name="maxRetries">Maximum number of ERR028 retries (default 0, retry off).</param>
+        /// <param name="waitSeconds">Seconds to wait before each retry (default 10, the API's default window).</param>
         /// <returns>SendResult.</returns>
         /// <remarks>
-        /// WARNING: each retry sleeps the calling thread for 16 seconds (API requires 15s minimum
-        /// between sends to the same number). With maxRetries=3 this can block for up to 48 seconds.
+        /// ERR028 only happens when Duplicate SMS protection is enabled in the account's API settings.
+        /// The window is set per account (10 seconds by default), so pass waitSeconds to match yours.
+        /// The whole request is rejected and nothing is charged.
+        /// WARNING: each retry sleeps the calling thread for waitSeconds.
         /// Do not call this method on an ASP.NET Core request thread. Use a background job instead.
         /// </remarks>
-        public SendResult SendWithRetry(string mobile, string message, string? sender = null, int maxRetries = 3)
+        public SendResult SendWithRetry(string mobile, string message, string? sender = null, int maxRetries = 0, int waitSeconds = 10)
         {
             var result = Send(mobile, message, sender);
 
             for (int attempt = 0; attempt < maxRetries; attempt++)
             {
                 if (result.Code != "ERR028") break;
-                Thread.Sleep(16000); // 16 seconds (API requires 15s minimum)
+                // 2026-10-22 15:36 +03: wait the caller's window, not a fixed 16 s.
+                Thread.Sleep(waitSeconds * 1000);
                 result = Send(mobile, message, sender);
             }
 

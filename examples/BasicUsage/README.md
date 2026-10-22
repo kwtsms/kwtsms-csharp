@@ -29,4 +29,4 @@ dotnet run
 - Use `KwtSmsClient.FromEnv()` to load credentials from environment variables or `.env` files.
 - Always save the `MsgId` from the send response for status checks and delivery reports.
 - Save `BalanceAfter` to avoid extra API calls.
-- Set `KWTSMS_TEST_MODE=1` during development (messages queue but are not delivered, no credits consumed).
+- Set `KWTSMS_TEST_MODE=1` during development (messages are queued, not delivered; credits held until you delete them from the Sending Queue).
