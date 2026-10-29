@@ -1,10 +1,10 @@
 # kwtSMS C# Client
 
-[![CI](https://github.com/boxlinknet/kwtsms-csharp/actions/workflows/ci.yml/badge.svg)](https://github.com/boxlinknet/kwtsms-csharp/actions/workflows/ci.yml)
+[![CI](https://github.com/kwtsms/kwtsms-csharp/actions/workflows/ci.yml/badge.svg)](https://github.com/kwtsms/kwtsms-csharp/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/KwtSMS.svg)](https://www.nuget.org/packages/KwtSMS)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/KwtSMS.svg)](https://www.nuget.org/packages/KwtSMS)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CodeQL](https://github.com/boxlinknet/kwtsms-csharp/actions/workflows/codeql.yml/badge.svg)](https://github.com/boxlinknet/kwtsms-csharp/actions/workflows/codeql.yml)
+[![CodeQL](https://github.com/kwtsms/kwtsms-csharp/actions/workflows/codeql.yml/badge.svg)](https://github.com/kwtsms/kwtsms-csharp/actions/workflows/codeql.yml)
 
 C# client for the [kwtSMS API](https://www.kwtsms.com). Send SMS, check balance, validate numbers, list sender IDs, check coverage, get delivery reports. Zero dependencies on .NET 6+.
 
