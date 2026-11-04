@@ -16,8 +16,8 @@
     <Description>C# client for the kwtSMS SMS gateway (kwtsms.com). Send SMS, check balance, validate numbers, and more. Zero dependencies on .NET 6+.</Description>
     <PackageTags>sms;kwtsms;kuwait;otp;messaging;api;gateway</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/boxlinknet/kwtsms-csharp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/boxlinknet/kwtsms-csharp</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kwtsms/kwtsms-csharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kwtsms/kwtsms-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 

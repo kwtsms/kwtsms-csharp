@@ -14,7 +14,7 @@ If you discover a security vulnerability in this package, please report it respo
 
 1. **Do NOT open a public GitHub issue.**
 2. Email security concerns to the maintainers via the repository's GitHub Security Advisories tab.
-3. Go to the [Security Advisories page](https://github.com/boxlinknet/kwtsms-csharp/security/advisories) and click "Report a vulnerability."
+3. Go to the [Security Advisories page](https://github.com/kwtsms/kwtsms-csharp/security/advisories) and click "Report a vulnerability."
 
 We will acknowledge your report within 48 hours and provide a timeline for a fix.
 

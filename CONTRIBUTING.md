@@ -5,7 +5,7 @@
 1. Install [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later.
 2. Clone the repository:
    ```bash
-   git clone https://github.com/boxlinknet/kwtsms-csharp.git
+   git clone https://github.com/kwtsms/kwtsms-csharp.git
    cd kwtsms-csharp
    ```
 3. Restore and build:
