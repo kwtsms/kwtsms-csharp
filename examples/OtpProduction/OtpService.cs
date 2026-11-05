@@ -141,7 +141,7 @@ namespace OtpProduction
                 return new OtpResult
                 {
                     Success = false,
-                    Message = "Please enter a valid phone number in international format (e.g., +965 9876 5432)."
+                    Message = "Please enter a valid phone number in international format (e.g., +965 XXXX XXXX)."
                 };
             }
 

@@ -55,6 +55,9 @@ jobs:
             src/KwtSMS/KwtSMS.csproj
 
       - name: Run tests before release
+        # 2026-11-05 08:23 +03: tests that need a phone number read it from this secret and skip when unset, int-testnumber.
+        env:
+          KWTSMS_TEST_NUMBER: ${{ secrets.KWTSMS_TEST_NUMBER }}
         run: |
           dotnet restore
           dotnet build --configuration Release --no-restore

@@ -117,7 +117,7 @@ Console.WriteLine();
 Console.WriteLine("── 4. Validate ──────────────────────────────────────────");
 
 var validatePayload = Auth();
-validatePayload["mobile"] = "96598765432,966551234567";   // Kuwait + Saudi
+validatePayload["mobile"] = "965XXXXXXXX,966551234567";   // Kuwait + Saudi
 
 var validateResult = await CallApi("validate", validatePayload);
 
@@ -154,7 +154,7 @@ Console.WriteLine("── 5. Send SMS ──────────────
 
 var sendPayload = Auth();
 sendPayload["sender"]  = senderId;
-sendPayload["mobile"]  = "96598765432";
+sendPayload["mobile"]  = "965XXXXXXXX";
 sendPayload["message"] = "Your verification code is: 123456";
 sendPayload["test"]    = testMode;
 

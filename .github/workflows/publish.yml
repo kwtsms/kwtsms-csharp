@@ -33,6 +33,9 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run tests
+        # 2026-11-05 08:23 +03: tests that need a phone number read it from this secret and skip when unset, int-testnumber.
+        env:
+          KWTSMS_TEST_NUMBER: ${{ secrets.KWTSMS_TEST_NUMBER }}
         run: dotnet test --configuration Release --no-build --filter "Category!=Integration"
 
       - name: Extract version from tag

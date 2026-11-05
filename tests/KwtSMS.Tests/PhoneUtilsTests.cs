@@ -8,64 +8,32 @@ namespace KwtSMS.Tests
     {
         // ── NormalizePhone ──
 
-        [Fact]
-        public void NormalizePhone_PlainInternational()
+        // 2026-11-05 08:23 +03: Kuwait number tests read KWTSMS_TEST_NUMBER through TestNumber
+        // (skip when unset); variants are built at runtime and passed by kind so test names
+        // and failure messages never show a number. Replaces the hardcoded sample, int-testnumber.
+        [SkippableTheory]
+        [InlineData("plain")]
+        [InlineData("plus")]
+        [InlineData("00")]
+        [InlineData("000")]
+        [InlineData("spaces")]
+        [InlineData("dashes")]
+        [InlineData("dots")]
+        [InlineData("parens")]
+        [InlineData("mixed")]
+        [InlineData("arabic")]
+        [InlineData("arabic-plus")]
+        [InlineData("arabic-00")]
+        [InlineData("arabic-spaces")]
+        [InlineData("arabic-dashes")]
+        [InlineData("arabic-cc-latin")]
+        [InlineData("persian")]
+        [InlineData("persian-plus")]
+        [InlineData("persian-spaces")]
+        public void NormalizePhone_KuwaitVariants(string kind)
         {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("96598765432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_StripsPlusPrefix()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("+96598765432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_StripsDoubleZero()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("0096598765432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_StripsSpaces()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("965 9876 5432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_StripsDashes()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("965-9876-5432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_StripsDots()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("965.9876.5432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_StripsParentheses()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("(965) 98765432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ArabicIndicDigits()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ExtendedArabicIndicDigits()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u06F9\u06F6\u06F5\u06F9\u06F8\u06F7\u06F6\u06F5\u06F4\u06F3\u06F2"));
-        }
-
-        [Fact]
-        public void NormalizePhone_MixedFormats()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("+00 965-9876 5432"));
+            var input = TestNumber.Variant(kind);
+            TestNumber.AssertSame(TestNumber.Get(), PhoneUtils.NormalizePhone(input));
         }
 
         [Fact]
@@ -87,61 +55,6 @@ namespace KwtSMS.Tests
         }
 
         [Fact]
-        public void NormalizePhone_LeadingZerosStripped()
-        {
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("00096598765432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ArabicIndicWithPlus()
-        {
-            // +٩٦٥٩٨٧٦٥٤٣٢
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("+\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ArabicIndicWithDoubleZero()
-        {
-            // ٠٠٩٦٥٩٨٧٦٥٤٣٢
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u0660\u0660\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ArabicIndicWithSpaces()
-        {
-            // ٩٦٥ ٩٨٧٦ ٥٤٣٢
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u0669\u0666\u0665 \u0669\u0668\u0667\u0666 \u0665\u0664\u0663\u0662"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ArabicIndicWithDashes()
-        {
-            // ٩٦٥-٩٨٧٦-٥٤٣٢
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u0669\u0666\u0665-\u0669\u0668\u0667\u0666-\u0665\u0664\u0663\u0662"));
-        }
-
-        [Fact]
-        public void NormalizePhone_MixedArabicAndLatinDigits()
-        {
-            // ٩٦٥98765432
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u0669\u0666\u066598765432"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ExtendedArabicIndicWithPlus()
-        {
-            // +۹۶۵۹۸۷۶۵۴۳۲ (Farsi/Urdu digits)
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("+\u06F9\u06F6\u06F5\u06F9\u06F8\u06F7\u06F6\u06F5\u06F4\u06F3\u06F2"));
-        }
-
-        [Fact]
-        public void NormalizePhone_ExtendedArabicIndicWithSpaces()
-        {
-            // ۹۶۵ ۹۸۷۶ ۵۴۳۲
-            Assert.Equal("96598765432", PhoneUtils.NormalizePhone("\u06F9\u06F6\u06F5 \u06F9\u06F8\u06F7\u06F6 \u06F5\u06F4\u06F3\u06F2"));
-        }
-
-        [Fact]
         public void NormalizePhone_ArabicIndicSaudiNumber()
         {
             // ٩٦٦٥٥١٢٣٤٥٦٧
@@ -157,21 +70,31 @@ namespace KwtSMS.Tests
 
         // ── ValidatePhoneInput ──
 
-        [Fact]
-        public void Validate_ValidKuwaitNumber()
+        // 2026-11-05 08:23 +03: valid Kuwait inputs built from KWTSMS_TEST_NUMBER, int-testnumber.
+        [SkippableTheory]
+        [InlineData("plain")]
+        [InlineData("plus")]
+        [InlineData("padded")]
+        [InlineData("arabic")]
+        [InlineData("arabic-plus")]
+        [InlineData("arabic-dash-space")]
+        [InlineData("arabic-cc-latin")]
+        [InlineData("persian")]
+        public void Validate_KuwaitVariants(string kind)
         {
-            var result = PhoneUtils.ValidatePhoneInput("96598765432");
-            Assert.True(result.IsValid);
-            Assert.Null(result.Error);
-            Assert.Equal("96598765432", result.Normalized);
+            var result = PhoneUtils.ValidatePhoneInput(TestNumber.Variant(kind));
+            Assert.True(result.IsValid, "expected valid (value hidden)");
+            Assert.True(result.Error == null, "expected no error (text hidden, it may hold the number)");
+            TestNumber.AssertSame(TestNumber.Get(), result.Normalized);
         }
 
-        [Fact]
-        public void Validate_ValidWithPlusPrefix()
+        [SkippableFact]
+        public void Validate_NonStringInput()
         {
-            var result = PhoneUtils.ValidatePhoneInput("+96598765432");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
+            var n = TestNumber.Get();
+            var result = PhoneUtils.ValidatePhoneInput(long.Parse(n));
+            Assert.True(result.IsValid, "expected valid (value hidden)");
+            TestNumber.AssertSame(n, result.Normalized);
         }
 
         [Fact]
@@ -246,66 +169,6 @@ namespace KwtSMS.Tests
             var result = PhoneUtils.ValidatePhoneInput("1234567890123456");
             Assert.False(result.IsValid);
             Assert.Contains("too long", result.Error);
-        }
-
-        [Fact]
-        public void Validate_ArabicDigits()
-        {
-            // ٩٦٥٩٨٧٦٥٤٣٢ (Arabic-Indic)
-            var result = PhoneUtils.ValidatePhoneInput("\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
-        }
-
-        [Fact]
-        public void Validate_NonStringInput()
-        {
-            var result = PhoneUtils.ValidatePhoneInput(96598765432L);
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
-        }
-
-        [Fact]
-        public void Validate_WhitespaceAroundNumber()
-        {
-            var result = PhoneUtils.ValidatePhoneInput("  +96598765432  ");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
-        }
-
-        [Fact]
-        public void Validate_ArabicIndicWithPlus()
-        {
-            var result = PhoneUtils.ValidatePhoneInput("+\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
-        }
-
-        [Fact]
-        public void Validate_ExtendedArabicIndicDigits()
-        {
-            // ۹۶۵۹۸۷۶۵۴۳۲ (Farsi/Urdu digits)
-            var result = PhoneUtils.ValidatePhoneInput("\u06F9\u06F6\u06F5\u06F9\u06F8\u06F7\u06F6\u06F5\u06F4\u06F3\u06F2");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
-        }
-
-        [Fact]
-        public void Validate_ArabicIndicWithSpacesAndDashes()
-        {
-            // ٩٦٥-٩٨٧٦ ٥٤٣٢
-            var result = PhoneUtils.ValidatePhoneInput("\u0669\u0666\u0665-\u0669\u0668\u0667\u0666 \u0665\u0664\u0663\u0662");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
-        }
-
-        [Fact]
-        public void Validate_MixedArabicAndLatinDigits()
-        {
-            // ٩٦٥98765432
-            var result = PhoneUtils.ValidatePhoneInput("\u0669\u0666\u066598765432");
-            Assert.True(result.IsValid);
-            Assert.Equal("96598765432", result.Normalized);
         }
 
         [Fact]
@@ -397,10 +260,10 @@ namespace KwtSMS.Tests
             Assert.Equal("971501234567", result.Normalized);
         }
 
-        [Fact]
+        [SkippableFact]
         public void FindCountryCode_Kuwait()
         {
-            Assert.Equal("965", PhoneUtils.FindCountryCode("96598765432"));
+            Assert.Equal("965", PhoneUtils.FindCountryCode(TestNumber.Get()));
         }
 
         [Fact]
@@ -421,12 +284,12 @@ namespace KwtSMS.Tests
             Assert.Null(PhoneUtils.FindCountryCode("9991234567"));
         }
 
-        [Fact]
+        [SkippableFact]
         public void ValidatePhoneFormat_ValidKuwait()
         {
-            var (valid, error) = PhoneUtils.ValidatePhoneFormat("96598765432");
-            Assert.True(valid);
-            Assert.Null(error);
+            var (valid, error) = PhoneUtils.ValidatePhoneFormat(TestNumber.Get());
+            Assert.True(valid, "expected valid (value hidden)");
+            Assert.True(error == null, "expected no error (text hidden, it may hold the number)");
         }
 
         [Fact]

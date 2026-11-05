@@ -19,7 +19,7 @@ builder.Services.AddSingleton<KwtSmsClient>(sp =>
 var app = builder.Build();
 
 // POST /api/send-otp
-// Body: { "phone": "+96598765432" }
+// Body: { "phone": "+965XXXXXXXX" }
 app.MapPost("/api/send-otp", async (HttpContext context, KwtSmsClient sms) =>
 {
     var body = await context.Request.ReadFromJsonAsync<OtpRequest>();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq; // 2026-11-05 08:23 +03: SequenceEqual in the mocked bulk test, int-testnumber.
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -112,10 +113,14 @@ namespace KwtSMS.Tests
         }
 
         // ── Send tests ──
+        // 2026-11-05 08:23 +03: Send/Validate tests take the number from KWTSMS_TEST_NUMBER
+        // (TestNumber, skip when unset); response echoes use TestNumber.Placeholder; the live
+        // 250-number bulk test is replaced by Send_Bulk250_BatchesInto200And50 below, int-testnumber.
 
-        [Fact]
+        [SkippableFact]
         public void Send_Success()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 var json = JsonSerializer.Serialize(new Dictionary<string, object>
@@ -133,7 +138,7 @@ namespace KwtSMS.Tests
                 };
             });
 
-            var result = client.Send("96598765432", "Test message");
+            var result = client.Send(n,"Test message");
 
             Assert.Equal("OK", result.Result);
             Assert.Equal("abc123", result.MsgId);
@@ -160,9 +165,10 @@ namespace KwtSMS.Tests
             Assert.Equal("ERR_INVALID_INPUT", result.Code);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Send_EmptyMessage_AfterCleaning()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 return new HttpResponseMessage(HttpStatusCode.OK)
@@ -172,15 +178,16 @@ namespace KwtSMS.Tests
             });
 
             // Only emojis, empty after cleaning
-            var result = client.Send("96598765432", "\U0001F600\U0001F601\U0001F602");
+            var result = client.Send(n,"\U0001F600\U0001F601\U0001F602");
 
             Assert.Equal("ERROR", result.Result);
             Assert.Equal("ERR009", result.Code);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Send_MixedValidInvalid()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 var json = JsonSerializer.Serialize(new Dictionary<string, object>
@@ -198,16 +205,17 @@ namespace KwtSMS.Tests
                 };
             });
 
-            var result = client.Send("96598765432,abc,user@email.com", "Test");
+            var result = client.Send(n + ",abc,user@email.com", "Test");
 
             Assert.Equal("OK", result.Result);
             Assert.NotNull(result.Invalid);
             Assert.Equal(2, result.Invalid!.Count);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Send_DeduplicatesNumbers()
         {
+            var n = TestNumber.Get();
             string? capturedBody = null;
             var client = CreateClientWithMock(req =>
             {
@@ -228,7 +236,7 @@ namespace KwtSMS.Tests
             });
 
             // Same number in different formats
-            var result = client.Send("+96598765432,0096598765432,96598765432", "Test");
+            var result = client.Send("+" + n + ",00" + n + "," + n, "Test");
 
             Assert.Equal("OK", result.Result);
             // The body should contain the number only once
@@ -236,9 +244,10 @@ namespace KwtSMS.Tests
             Assert.DoesNotContain(",", GetMobileFromBody(capturedBody!));
         }
 
-        [Fact]
+        [SkippableFact]
         public void Send_ERR028_RateLimit()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 var json = JsonSerializer.Serialize(new
@@ -253,7 +262,7 @@ namespace KwtSMS.Tests
                 };
             });
 
-            var result = client.Send("96598765432", "Test");
+            var result = client.Send(n,"Test");
 
             Assert.Equal("ERROR", result.Result);
             Assert.Equal("ERR028", result.Code);
@@ -262,9 +271,10 @@ namespace KwtSMS.Tests
             Assert.Contains("too soon", result.Action);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Send_ERR010_ZeroBalance()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 var json = JsonSerializer.Serialize(new
@@ -279,30 +289,32 @@ namespace KwtSMS.Tests
                 };
             });
 
-            var result = client.Send("96598765432", "Test");
+            var result = client.Send(n,"Test");
 
             Assert.Equal("ERROR", result.Result);
             Assert.Contains("kwtsms.com", result.Action);
         }
 
-        [Fact]
+        [SkippableFact]
         public void Send_NetworkError()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 throw new HttpRequestException("Connection refused");
             });
 
-            var result = client.Send("96598765432", "Test");
+            var result = client.Send(n,"Test");
 
             Assert.Equal("ERROR", result.Result);
         }
 
         // ── Validate tests ──
 
-        [Fact]
+        [SkippableFact]
         public void Validate_Success()
         {
+            var n = TestNumber.Get();
             var client = CreateClientWithMock(req =>
             {
                 var json = JsonSerializer.Serialize(new Dictionary<string, object>
@@ -310,7 +322,7 @@ namespace KwtSMS.Tests
                     ["result"] = "OK",
                     ["mobile"] = new Dictionary<string, object>
                     {
-                        ["OK"] = new[] { "96598765432" },
+                        ["OK"] = new[] { n },
                         ["ER"] = new[] { "123" },
                         ["NR"] = new[] { "966558724477" }
                     }
@@ -321,9 +333,9 @@ namespace KwtSMS.Tests
                 };
             });
 
-            var result = client.Validate("96598765432", "123", "966558724477");
+            var result = client.Validate(n, "123", "966558724477");
 
-            Assert.Contains("96598765432", result.Ok);
+            TestNumber.AssertContains(n, result.Ok);
             Assert.Null(result.Error);
         }
 
@@ -456,7 +468,7 @@ namespace KwtSMS.Tests
                     {
                         new Dictionary<string, object>
                         {
-                            ["Number"] = "96598765432",
+                            ["Number"] = TestNumber.Placeholder,
                             ["Status"] = "Received by recipient"
                         }
                     }
@@ -471,7 +483,7 @@ namespace KwtSMS.Tests
 
             Assert.Equal("OK", result.Result);
             Assert.Single(result.Report);
-            Assert.Equal("96598765432", result.Report[0].Number);
+            Assert.Equal(TestNumber.Placeholder, result.Report[0].Number);
         }
 
         [Fact]
@@ -495,6 +507,54 @@ namespace KwtSMS.Tests
 
             Assert.Equal("ERROR", result.Result);
             Assert.Equal("ERR019", result.Code);
+        }
+
+        // ── Bulk send (mocked) ──
+
+        // 2026-11-05 08:23 +03: offline replacement for the removed live 250-number bulk test.
+        // Numbers are generated here and only ever reach the mock handler, int-testnumber.
+        [Fact]
+        public void Send_Bulk250_BatchesInto200And50()
+        {
+            var batchSizes = new List<int>();
+            var sentNumbers = new List<string>();
+            double balance = 1000.0;
+            var client = CreateClientWithMock(req =>
+            {
+                var body = req.Content!.ReadAsStringAsync().GetAwaiter().GetResult();
+                var batch = GetMobileFromBody(body).Split(',');
+                batchSizes.Add(batch.Length);
+                sentNumbers.AddRange(batch);
+                balance -= batch.Length;
+                var json = JsonSerializer.Serialize(new Dictionary<string, object>
+                {
+                    ["result"] = "OK",
+                    ["msg-id"] = "bulk" + batchSizes.Count,
+                    ["numbers"] = batch.Length,
+                    ["points-charged"] = batch.Length,
+                    ["balance-after"] = balance,
+                    ["unix-timestamp"] = 1684763355
+                });
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
+                };
+            });
+
+            var numbers = new string[250];
+            for (int i = 0; i < numbers.Length; i++)
+                numbers[i] = "9655" + i.ToString("D7");
+
+            var result = client.Send(string.Join(",", numbers), "C# client bulk test (250 numbers, mocked)");
+
+            Assert.Equal(new[] { 200, 50 }, batchSizes);
+            Assert.True(numbers.SequenceEqual(sentNumbers), "every number sent once, in order (values hidden)");
+            Assert.Equal("OK", result.Result);
+            Assert.Equal("bulk1,bulk2", result.MsgId);
+            Assert.Equal(250, result.Numbers);
+            Assert.Equal(250, result.PointsCharged);
+            Assert.Equal(750.0, result.BalanceAfter);
+            Assert.Equal(750.0, client.CachedBalance);
         }
 
         // ── Helper ──

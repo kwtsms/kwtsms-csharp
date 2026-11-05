@@ -23,7 +23,7 @@ if (!ok)
 Console.WriteLine($"Connected. Balance: {balance} credits");
 
 // Send a single SMS
-var result = sms.Send("96598765432", "Your verification code is: 123456");
+var result = sms.Send("965XXXXXXXX", "Your verification code is: 123456");
 if (result.Result == "OK")
 {
     Console.WriteLine($"Sent. Message ID: {result.MsgId}");

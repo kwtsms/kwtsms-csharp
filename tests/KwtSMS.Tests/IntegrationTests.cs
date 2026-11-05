@@ -35,6 +35,9 @@ namespace KwtSMS.Tests
                 "CSHARP_USERNAME / CSHARP_PASSWORD not set");
         }
 
+        // 2026-11-05 08:23 +03: live sends go only to KWTSMS_TEST_NUMBER (skip when unset), int-testnumber.
+        private static string Number() => TestNumber.Get();
+
         // ── Verify ──
 
         [SkippableFact]
@@ -86,7 +89,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("96598765432", "Integration test from C# client");
+            var result = client.Send(Number(), "Integration test from C# client");
 
             // In test mode, should be OK or a known error
             Assert.NotNull(result.Result);
@@ -121,7 +124,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("96598765432,abc,user@email.com", "Test mixed");
+            var result = client.Send(Number() + ",abc,user@email.com", "Test mixed");
 
             // Valid number should be sent, invalid ones reported
             Assert.NotNull(result.Invalid);
@@ -134,7 +137,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("+96598765432", "Test with + prefix");
+            var result = client.Send("+" + Number(),"Test with + prefix");
 
             Assert.NotNull(result.Result);
         }
@@ -145,7 +148,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("0096598765432", "Test with 00 prefix");
+            var result = client.Send("00" + Number(),"Test with 00 prefix");
 
             Assert.NotNull(result.Result);
         }
@@ -156,8 +159,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            // ٩٦٥٩٨٧٦٥٤٣٢
-            var result = client.Send("\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662", "Test Arabic digits");
+            var result = client.Send(TestNumber.ToArabicIndic(Number()), "Test Arabic digits");
 
             Assert.NotNull(result.Result);
         }
@@ -168,7 +170,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("+96598765432,0096598765432,96598765432", "Test dedup");
+            var result = client.Send("+" + Number() + ",00" + Number() + "," + Number(), "Test dedup");
 
             // Should deduplicate to single number
             Assert.NotNull(result.Result);
@@ -180,7 +182,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("96598765432", "Test empty sender", sender: "");
+            var result = client.Send(Number(), "Test empty sender", sender: "");
 
             // API should reject empty sender or use default
             Assert.NotNull(result.Result);
@@ -192,7 +194,7 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Send("96598765432", "Test wrong sender", sender: "NONEXISTENT-SENDER");
+            var result = client.Send(Number(), "Test wrong sender", sender: "NONEXISTENT-SENDER");
 
             Assert.NotNull(result.Result);
         }
@@ -232,71 +234,13 @@ namespace KwtSMS.Tests
             SkipIfNoCredentials();
             var client = CreateClient();
 
-            var result = client.Validate("96598765432", "+96512345678");
+            var result = client.Validate(Number(), "+96512345678");
 
             Assert.Null(result.Error);
         }
 
-        // ── Bulk Send: Client Library ──
-
-        // 250 numbers × 1 page (short English message < 160 chars) = 250 credits per test
-        private const int BulkTestNumbers = 250;
-        private const int BulkTestExpectedCredits = 250;
-
-        [SkippableFact]
-        public void Integration_BulkSend_250Numbers_ClientLibrary()
-        {
-            SkipIfNoCredentials();
-            var client = CreateClient();
-
-            // 1. Check balance BEFORE starting — know exactly what we have
-            var balance = client.Balance();
-            Assert.NotNull(balance);
-            var balanceBefore = balance!.Value;
-            Skip.If(balanceBefore < BulkTestExpectedCredits,
-                $"Insufficient credits: have {balanceBefore}, need {BulkTestExpectedCredits}");
-
-            // 2. Generate 250 numbers: 96599220000 to 96599220249
-            var numbers = new string[BulkTestNumbers];
-            for (int i = 0; i < BulkTestNumbers; i++)
-                numbers[i] = (96599220000L + i).ToString();
-            var mobile = string.Join(",", numbers);
-
-            // 3. Single Send() call → internally batches into 200 + 50
-            var result = client.Send(mobile, "C# client bulk test (250 numbers, test mode)");
-
-            // 4. Verify result
-            Assert.Equal("OK", result.Result);
-            Assert.NotNull(result.MsgId);
-
-            // Should have 2 comma-separated msg-ids (batch 1: 200, batch 2: 50)
-            var msgIds = result.MsgId!.Split(',');
-            Assert.Equal(2, msgIds.Length);
-            foreach (var id in msgIds)
-                Assert.False(string.IsNullOrWhiteSpace(id), "Each msg-id should be non-empty");
-
-            // Numbers accepted = 250
-            Assert.Equal(BulkTestNumbers, result.Numbers);
-
-            // 5. Credit accounting — message is <160 chars English = 1 page = 1 credit/number
-            Assert.Equal(BulkTestExpectedCredits, result.PointsCharged);
-
-            // 6. Balance tracking — must equal initial minus credits consumed
-            Assert.NotNull(result.BalanceAfter);
-            var balanceAfterSend = result.BalanceAfter!.Value;
-            Assert.True(balanceBefore - BulkTestExpectedCredits == balanceAfterSend,
-                $"Expected {balanceBefore} - {BulkTestExpectedCredits} = {balanceBefore - BulkTestExpectedCredits}, got BalanceAfter = {balanceAfterSend}");
-            // CachedBalance should match the final balance
-            Assert.Equal(balanceAfterSend, client.CachedBalance);
-
-            // 7. Check status of each msg-id: ERR030 expected (test mode = stuck in queue)
-            foreach (var msgId in msgIds)
-            {
-                var status = client.Status(msgId.Trim());
-                Assert.Equal("ERROR", status.Result);
-                Assert.Equal("ERR030", status.Code);
-            }
-        }
-
+        // 2026-11-05 08:23 +03: the live 250-number bulk test was removed (it sent to a generated
+        // number range); ClientTests.Send_Bulk250_BatchesInto200And50 covers the 200 + 50 batching
+        // offline, int-testnumber.
     }
 }

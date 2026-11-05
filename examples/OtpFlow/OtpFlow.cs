@@ -15,7 +15,7 @@ if (!ok)
 }
 
 // Validate the phone number locally before sending
-var validation = PhoneUtils.ValidatePhoneInput("+96598765432");
+var validation = PhoneUtils.ValidatePhoneInput("+965XXXXXXXX");
 if (!validation.IsValid)
 {
     Console.WriteLine($"Invalid phone: {validation.Error}");
@@ -44,7 +44,7 @@ else
     {
         case "ERR006":
         case "ERR025":
-            Console.WriteLine("Please enter a valid phone number in international format (e.g., +965 9876 5432).");
+            Console.WriteLine("Please enter a valid phone number in international format (e.g., +965 XXXX XXXX).");
             break;
         case "ERR028":
             Console.WriteLine("Please wait a moment before requesting another code.");

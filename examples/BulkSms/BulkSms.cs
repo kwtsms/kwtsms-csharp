@@ -21,10 +21,10 @@ Console.WriteLine($"Balance: {balance} credits");
 
 var numbers = new[]
 {
-    "96598765432",
+    "965XXXXXXXX",
     "96512345678",
     "+96587654321",
-    "0096599887766"
+    "00965XXXXXXXX"
 };
 
 var message = "Special offer from MyStore: 20% off all items this weekend. Reply STOP to unsubscribe.";

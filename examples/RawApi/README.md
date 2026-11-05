@@ -63,7 +63,7 @@ dotnet run
   Prefixes: +965  +966  +971
 
 ── 4. Validate ──────────────────────────────────────────
-  OK: 96598765432
+  OK: 965XXXXXXXX
   Format errors (ER):
   No route (NR): 966551234567
 

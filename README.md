@@ -66,7 +66,7 @@ var (ok, balance, error) = sms.Verify();
 Console.WriteLine($"Balance: {balance} credits");
 
 // Send SMS
-var result = sms.Send("96598765432", "Your OTP for MyApp is: 123456");
+var result = sms.Send("965XXXXXXXX", "Your OTP for MyApp is: 123456");
 if (result.Result == "OK")
 {
     Console.WriteLine($"Sent! Message ID: {result.MsgId}");
@@ -112,16 +112,16 @@ var (ok, balance, error) = sms.Verify();
 
 ```csharp
 // Single number
-var result = sms.Send("96598765432", "Hello from C#");
+var result = sms.Send("965XXXXXXXX", "Hello from C#");
 
 // Multiple numbers (comma-separated)
-var result = sms.Send("96598765432,96512345678", "Bulk message");
+var result = sms.Send("965XXXXXXXX,96512345678", "Bulk message");
 
 // Multiple numbers (array)
-var result = sms.Send(new[] { "96598765432", "96512345678" }, "Bulk message");
+var result = sms.Send(new[] { "965XXXXXXXX", "96512345678" }, "Bulk message");
 
 // Override sender ID
-var result = sms.Send("96598765432", "Hello", sender: "MY-APP");
+var result = sms.Send("965XXXXXXXX", "Hello", sender: "MY-APP");
 ```
 
 The `Send` method automatically:
@@ -135,7 +135,7 @@ The `Send` method automatically:
 
 ```csharp
 // Retry on ERR028 is off by default (maxRetries: 0). Opt in and set the wait to your account's window.
-var result = sms.SendWithRetry("96598765432", "OTP: 123456", maxRetries: 3, waitSeconds: 10);
+var result = sms.SendWithRetry("965XXXXXXXX", "OTP: 123456", maxRetries: 3, waitSeconds: 10);
 ```
 
 ERR028 only happens when Duplicate SMS protection is enabled in your account's API settings. When it is on and any number in the request was sent the same message within the account's window (10 seconds by default, configurable per account), the whole request is rejected with ERR028 and nothing is charged.
@@ -150,7 +150,7 @@ double? balance = sms.Balance();
 ### Validate Numbers
 
 ```csharp
-var result = sms.Validate("96598765432", "+96512345678", "invalid");
+var result = sms.Validate("965XXXXXXXX", "+96512345678", "invalid");
 // result.Ok   = valid and routable numbers
 // result.Er   = numbers with format errors
 // result.Nr   = numbers with no route (country not activated)
@@ -194,8 +194,8 @@ var result = sms.Dlr("msg-id-from-send-response");
 using KwtSMS;
 
 // Normalize phone number (digits only, no leading zeros)
-string normalized = PhoneUtils.NormalizePhone("+965 9876-5432");
-// "96598765432"
+string normalized = PhoneUtils.NormalizePhone("+965 XXXX-XXXX");
+// "965XXXXXXXX"
 
 // Validate phone number
 var validation = PhoneUtils.ValidatePhoneInput("user@email.com");
@@ -217,14 +217,14 @@ All formats are accepted and normalized automatically:
 
 | Input | Normalized | Valid? |
 |-------|-----------|--------|
-| `96598765432` | `96598765432` | Yes |
-| `+96598765432` | `96598765432` | Yes |
-| `0096598765432` | `96598765432` | Yes |
-| `965 9876 5432` | `96598765432` | Yes |
-| `965-9876-5432` | `96598765432` | Yes |
-| `(965) 98765432` | `96598765432` | Yes |
-| `\u0669\u0666\u0665\u0669\u0668\u0667\u0666\u0665\u0664\u0663\u0662` (Arabic-Indic) | `96598765432` | Yes |
-| `\u06F9\u06F6\u06F5\u06F9\u06F8\u06F7\u06F6\u06F5\u06F4\u06F3\u06F2` (Extended Arabic-Indic) | `96598765432` | Yes |
+| `965XXXXXXXX` | `965XXXXXXXX` | Yes |
+| `+965XXXXXXXX` | `965XXXXXXXX` | Yes |
+| `00965XXXXXXXX` | `965XXXXXXXX` | Yes |
+| `965 XXXX XXXX` | `965XXXXXXXX` | Yes |
+| `965-XXXX-XXXX` | `965XXXXXXXX` | Yes |
+| `(965) XXXXXXXX` | `965XXXXXXXX` | Yes |
+| `\u0669\u0666\u0665XXXXXXXX` (Arabic-Indic) | `965XXXXXXXX` | Yes |
+| `\u06F9\u06F6\u06F5XXXXXXXX` (Extended Arabic-Indic) | `965XXXXXXXX` | Yes |
 | `123456` (too short) | rejected | No |
 | `user@gmail.com` | rejected | No |
 
@@ -247,7 +247,7 @@ Arabic letters and Arabic text are fully supported and never stripped.
 Every error response includes a developer-friendly `Action` field:
 
 ```csharp
-var result = sms.Send("96598765432", "Test");
+var result = sms.Send("965XXXXXXXX", "Test");
 if (result.Result == "ERROR")
 {
     Console.WriteLine($"Code: {result.Code}");           // "ERR003"

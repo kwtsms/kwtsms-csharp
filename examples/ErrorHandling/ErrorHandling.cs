@@ -17,7 +17,7 @@ if (!ok)
 
 // Example 1: Phone validation before send
 Console.WriteLine("=== Phone Validation ===");
-var testNumbers = new[] { "+96598765432", "user@email.com", "123", "abc", "" };
+var testNumbers = new[] { "+965XXXXXXXX", "user@email.com", "123", "abc", "" };
 foreach (var num in testNumbers)
 {
     var validation = PhoneUtils.ValidatePhoneInput(num);
@@ -36,7 +36,7 @@ Console.WriteLine($"  After:  {cleanMessage}");
 
 // Example 3: Send with error handling
 Console.WriteLine("\n=== Send with Error Handling ===");
-var result = sms.Send("96598765432", "Test from C# error handling example");
+var result = sms.Send("965XXXXXXXX", "Test from C# error handling example");
 Console.WriteLine($"  Result: {result.Result}");
 if (result.Result == "OK")
 {
