@@ -242,6 +242,16 @@ All formats are accepted and normalized automatically:
 
 Arabic letters and Arabic text are fully supported and never stripped.
 
+## User-Agent
+
+Every API request carries the User-Agent `kwtsms-csharp/<version>`: the library name and version only, no
+personal or customer data. Pass your own product token as the sixth constructor argument to put it in front:
+
+```csharp
+var sms = new KwtSmsClient(user, pass, "MY-SENDER", false, "kwtsms.log", "my-shop/2.1.0");
+// User-Agent: my-shop/2.1.0 kwtsms-csharp/0.6.0
+```
+
 ## Error Handling
 
 Every error response includes a developer-friendly `Action` field:

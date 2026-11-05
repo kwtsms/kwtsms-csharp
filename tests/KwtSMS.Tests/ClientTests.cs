@@ -557,6 +557,55 @@ namespace KwtSMS.Tests
             Assert.Equal(750.0, client.CachedBalance);
         }
 
+        // 2026-11-05 14:16 +03: User-Agent identifies the library and the calling app (#939).
+
+        [Fact]
+        public void UserAgent_DefaultIsLibraryToken()
+        {
+            var client = new KwtSmsClient("csharp_username", "csharp_password", "TEST", true, "");
+            Assert.Equal("kwtsms-csharp/" + KwtSmsClient.Version, client.UserAgent);
+            Assert.Matches(@"^kwtsms-csharp/[0-9][0-9A-Za-z.+-]*$", client.UserAgent);
+            // The version comes from the assembly the csproj <Version> stamped.
+            Assert.StartsWith(typeof(KwtSmsClient).Assembly.GetName().Version!.ToString(3), KwtSmsClient.Version);
+        }
+
+        [Fact]
+        public void UserAgent_PrependsAppToken()
+        {
+            var client = new KwtSmsClient("csharp_username", "csharp_password", "TEST", true, "", "kwtsms-wordpress/3.5.2");
+            Assert.Equal("kwtsms-wordpress/3.5.2 kwtsms-csharp/" + KwtSmsClient.Version, client.UserAgent);
+        }
+
+        [Fact]
+        public void UserAgent_SanitizesAppToken()
+        {
+            var ua = KwtSmsClient.BuildUserAgent("my app\r\nX-Injected: 1");
+            Assert.DoesNotContain("\r", ua);
+            Assert.DoesNotContain("\n", ua);
+            Assert.DoesNotContain(" X-Injected", ua);
+            Assert.EndsWith(" kwtsms-csharp/" + KwtSmsClient.Version, ua);
+            Assert.Equal(64, KwtSmsClient.BuildUserAgent(new string('a', 200)).Split(' ')[0].Length);
+            Assert.Equal("kwtsms-csharp/" + KwtSmsClient.Version, KwtSmsClient.BuildUserAgent(" \r\n "));
+            Assert.Equal("shop/1.0 kwtsms-csharp/" + KwtSmsClient.Version, KwtSmsClient.BuildUserAgent("كوshop/1.0"));
+        }
+
+        [Fact]
+        public void UserAgent_HeaderIsSent()
+        {
+            string? sent = null;
+            SetInternalClient(new HttpClient(new MockHttpHandler(req =>
+            {
+                sent = string.Join(" ", req.Headers.GetValues("User-Agent"));
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("{\"result\":\"OK\",\"available\":1,\"purchased\":1}", System.Text.Encoding.UTF8, "application/json")
+                };
+            })));
+            var client = new KwtSmsClient("csharp_username", "csharp_password", "TEST", true, "", "my-shop/2.1.0");
+            client.Verify();
+            Assert.Equal("my-shop/2.1.0 kwtsms-csharp/" + KwtSmsClient.Version, sent);
+        }
+
         // ── Helper ──
 
         private static string GetMobileFromBody(string body)

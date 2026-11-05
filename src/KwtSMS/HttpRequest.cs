@@ -30,7 +30,8 @@ namespace KwtSMS
         internal static Dictionary<string, object?> Post(
             string endpoint,
             Dictionary<string, object?> payload,
-            string logFile)
+            string logFile,
+            string userAgent = "")
         {
             Dictionary<string, object?>? response = null;
             string? errorMsg = null;
@@ -46,6 +47,9 @@ namespace KwtSMS
                 request.Content = content;
                 request.Headers.Accept.Clear();
                 request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                // 2026-11-05 14:15 +03: "kwtsms-csharp/<version>", prefixed by the app token when given (#939).
+                // Without validation: "a:b" style tokens are fine on the wire but rejected by ProductInfoHeaderValue.
+                request.Headers.TryAddWithoutValidation("User-Agent", userAgent.Length > 0 ? userAgent : KwtSmsClient.BuildUserAgent());
 
                 var httpResponse = _client.SendAsync(request).GetAwaiter().GetResult();
                 var body = httpResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult();

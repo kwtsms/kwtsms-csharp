@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace KwtSMS
@@ -16,6 +19,16 @@ namespace KwtSMS
         private readonly string _senderId;
         private readonly bool _testMode;
         private readonly string _logFile;
+
+        /// <summary>
+        /// Library version, sent in the User-Agent. Read from the assembly, which the build stamps with the
+        /// csproj &lt;Version&gt; (the "+commit" suffix the SDK may add is dropped).
+        /// </summary>
+        // 2026-11-05 14:15 +03: added so kwtSMS can count accounts per integration (#939).
+        public static readonly string Version = ReadAssemblyVersion();
+
+        // 2026-11-05 14:15 +03: User-Agent sent on every API call, "[app token ]kwtsms-csharp/<version>" (#939).
+        private readonly string _userAgent;
 
         private readonly object _balanceLock = new object();
         private double? _cachedBalance;
@@ -36,12 +49,67 @@ namespace KwtSMS
             string senderId = "KWT-SMS",
             bool testMode = false,
             string logFile = "kwtsms.log")
+            : this(username, password, senderId, testMode, logFile, "")
         {
+        }
+
+        /// <summary>
+        /// Create a new kwtSMS client that also names the calling app in the User-Agent.
+        /// </summary>
+        /// <param name="username">API username (not your account mobile number).</param>
+        /// <param name="password">API password.</param>
+        /// <param name="senderId">Default sender ID shown on recipient's phone.</param>
+        /// <param name="testMode">When true, messages queue but are not delivered (credits held until deleted from the Sending Queue).</param>
+        /// <param name="logFile">JSONL log file path. Empty string to disable logging.</param>
+        /// <param name="appName">Product token of the calling app or plugin, e.g. "kwtsms-wordpress/3.5.2", sent before the library token.</param>
+        // 2026-11-05 14:15 +03: new overload (the 5-argument constructor keeps its binary signature), #939.
+        public KwtSmsClient(
+            string username,
+            string password,
+            string senderId,
+            bool testMode,
+            string logFile,
+            string appName)
+        {
+            _userAgent = BuildUserAgent(appName);
             _username = username ?? throw new ArgumentNullException(nameof(username));
             _password = password ?? throw new ArgumentNullException(nameof(password));
             _senderId = senderId ?? "KWT-SMS";
             _testMode = testMode;
             _logFile = logFile ?? "";
+        }
+
+        /// <summary>The User-Agent this client sends: "[app token ]kwtsms-csharp/&lt;Version&gt;".</summary>
+        // 2026-11-05 14:15 +03: added for per-integration counts (#939).
+        public string UserAgent => _userAgent;
+
+        /// <summary>
+        /// Build the User-Agent from an optional app token. The token is caller input, so control characters
+        /// (CR/LF would split the header) are removed, whitespace runs become '-', leading and trailing '-' are
+        /// trimmed, and it is cut to 64 characters. Non-ASCII characters are dropped too: .NET refuses to send a
+        /// header with them, which would fail every request. Empty gives the library token only.
+        /// </summary>
+        // 2026-11-05 14:15 +03: added for per-integration counts (#939).
+        public static string BuildUserAgent(string? appName = "")
+        {
+            var sb = new StringBuilder();
+            foreach (var c in appName ?? "")
+            {
+                if (!char.IsControl(c) && (c < 0x80 || char.IsWhiteSpace(c))) sb.Append(c);
+            }
+            var app = Regex.Replace(sb.ToString(), @"\s+", "-").Trim('-');
+            if (app.Length > 64) app = app.Substring(0, 64).TrimEnd('-');
+            var lib = "kwtsms-csharp/" + Version;
+            return app.Length == 0 ? lib : app + " " + lib;
+        }
+
+        private static string ReadAssemblyVersion()
+        {
+            var asm = typeof(KwtSmsClient).Assembly;
+            var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            if (string.IsNullOrEmpty(info)) info = asm.GetName().Version?.ToString(3) ?? "0.0.0";
+            var plus = info!.IndexOf('+');
+            return plus >= 0 ? info.Substring(0, plus) : info;
         }
 
         /// <summary>
@@ -106,7 +174,7 @@ namespace KwtSMS
             try
             {
                 var payload = AuthPayload();
-                var response = HttpRequest.Post("balance", payload, _logFile);
+                var response = HttpRequest.Post("balance", payload, _logFile, _userAgent);
 
                 var result = response.ContainsKey("result") ? response["result"]?.ToString() : null;
 
@@ -148,7 +216,7 @@ namespace KwtSMS
             try
             {
                 var payload = AuthPayload();
-                var response = HttpRequest.Post("balance", payload, _logFile);
+                var response = HttpRequest.Post("balance", payload, _logFile, _userAgent);
 
                 var result = response.ContainsKey("result") ? response["result"]?.ToString() : null;
 
@@ -278,7 +346,7 @@ namespace KwtSMS
                 payload["message"] = cleanedMessage;
                 payload["test"] = _testMode ? "1" : "0";
 
-                var response = HttpRequest.Post("send", payload, _logFile);
+                var response = HttpRequest.Post("send", payload, _logFile, _userAgent);
 
                 var sendResult = new SendResult
                 {
@@ -406,7 +474,7 @@ namespace KwtSMS
                 var payload = AuthPayload();
                 payload["mobile"] = string.Join(",", validNumbers);
 
-                var response = HttpRequest.Post("validate", payload, _logFile);
+                var response = HttpRequest.Post("validate", payload, _logFile, _userAgent);
 
                 var validateResult = new ValidateResult { Rejected = rejected };
 
@@ -452,7 +520,7 @@ namespace KwtSMS
             try
             {
                 var payload = AuthPayload();
-                var response = HttpRequest.Post("senderid", payload, _logFile);
+                var response = HttpRequest.Post("senderid", payload, _logFile, _userAgent);
 
                 var result = response.ContainsKey("result") ? response["result"]?.ToString() : null;
 
@@ -492,7 +560,7 @@ namespace KwtSMS
             try
             {
                 var payload = AuthPayload();
-                var response = HttpRequest.Post("coverage", payload, _logFile);
+                var response = HttpRequest.Post("coverage", payload, _logFile, _userAgent);
 
                 var result = response.ContainsKey("result") ? response["result"]?.ToString() : null;
 
@@ -535,7 +603,7 @@ namespace KwtSMS
                 var payload = AuthPayload();
                 payload["msgid"] = msgId;
 
-                var response = HttpRequest.Post("status", payload, _logFile);
+                var response = HttpRequest.Post("status", payload, _logFile, _userAgent);
 
                 var result = response.ContainsKey("result") ? response["result"]?.ToString() : null;
 
@@ -580,7 +648,7 @@ namespace KwtSMS
                 var payload = AuthPayload();
                 payload["msgid"] = msgId;
 
-                var response = HttpRequest.Post("dlr", payload, _logFile);
+                var response = HttpRequest.Post("dlr", payload, _logFile, _userAgent);
 
                 var result = response.ContainsKey("result") ? response["result"]?.ToString() : null;
 
@@ -715,7 +783,7 @@ namespace KwtSMS
             payload["message"] = message;
             payload["test"] = _testMode ? "1" : "0";
 
-            var response = HttpRequest.Post("send", payload, _logFile);
+            var response = HttpRequest.Post("send", payload, _logFile, _userAgent);
 
             for (int retry = 0; retry < 3; retry++)
             {
@@ -723,7 +791,7 @@ namespace KwtSMS
                     break;
 
                 Thread.Sleep(backoffMs[retry]);
-                response = HttpRequest.Post("send", payload, _logFile);
+                response = HttpRequest.Post("send", payload, _logFile, _userAgent);
             }
 
             return response;
