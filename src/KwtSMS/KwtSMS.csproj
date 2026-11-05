@@ -11,8 +11,8 @@
     <!-- NuGet Package -->
     <PackageId>KwtSMS</PackageId>
     <Version>0.6.0</Version>
-    <Authors>boxlinknet</Authors>
-    <Company>boxlinknet</Company>
+    <Authors>kwtSMS</Authors>
+    <Company>kwtSMS</Company>
     <Description>C# client for the kwtSMS SMS gateway (kwtsms.com). Send SMS, check balance, validate numbers, and more. Zero dependencies on .NET 6+.</Description>
     <PackageTags>sms;kwtsms;kuwait;otp;messaging;api;gateway</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

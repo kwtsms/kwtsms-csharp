@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ERR028 action text no longer states a fixed 15-second wait.
 - README, examples and the ERR006/ERR025 action text use the placeholder `965XXXXXXXX` instead of a sample mobile number. Tests that need a phone number read it from the `KWTSMS_TEST_NUMBER` environment variable and are skipped when it is unset.
 - The live 250-number bulk integration test is replaced by an offline mocked test of the same 200 + 50 batching.
+- Package author and license holder are now kwtSMS.
 
 ### Docs
 
