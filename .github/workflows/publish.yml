@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # 2026-11-06 17:48 +03: OIDC token for NuGet Trusted Publishing (policy kwtsms-csharp-github), no stored API key.
+      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -45,8 +47,15 @@ jobs:
       - name: Pack
         run: dotnet pack src/KwtSMS/KwtSMS.csproj --configuration Release --no-build -p:PackageVersion=${{ steps.version.outputs.VERSION }} --output ./nupkgs
 
+      # 2026-11-06 17:48 +03: Trusted Publishing: a short-lived key from GitHub OIDC replaces the expired NUGET_API_KEY secret.
+      - name: NuGet login (Trusted Publishing)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: kwtsms
+
       - name: Publish to NuGet
-        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
