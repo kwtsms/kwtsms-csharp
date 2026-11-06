@@ -53,19 +53,8 @@ namespace KwtSMS.Tests
             Assert.True(balance >= 0, $"Balance should be non-negative, got {balance}");
         }
 
-        [SkippableFact]
-        public void Integration_Verify_WrongCredentials()
-        {
-            SkipIfNoCredentials();
-            var client = new KwtSmsClient("csharp_wrong_user", "csharp_wrong_pass", testMode: true, logFile: "");
-
-            var (ok, balance, error) = client.Verify();
-
-            Assert.False(ok);
-            Assert.Null(balance);
-            Assert.NotNull(error);
-            Assert.Contains("Authentication", error, StringComparison.OrdinalIgnoreCase);
-        }
+        // 2026-11-07 00:03 +03: wrong-credential test mocked; live failed logins trip the security log (task neg-auth-tests).
+        // Integration_Verify_WrongCredentials removed: covered offline by ClientTests.Verify_WrongCredentials (mocked ERR003).
 
         // ── Balance ──
 
