@@ -1,4 +1,4 @@
-# 00 — Raw API
+# 00 - Raw API
 
 Call every kwtSMS REST endpoint directly with `HttpClient` and `System.Text.Json`. No external packages required. This shows exactly what happens over the wire so you can integrate the API into any C# project without using the KwtSMS client library.
 
@@ -76,10 +76,10 @@ dotnet run
   Timestamp:      1684763355  (GMT+3, not UTC)
 
 ── 6. Status ────────────────────────────────────────────
-  Error: ERR030 — Message stuck in queue with error
+  Error: ERR030 - Message stuck in queue with error
 
 ── 7. Delivery Report (DLR) ─────────────────────────────
-  Error: ERR019 — No reports found
+  Error: ERR019 - No reports found
 
 ── Done ─────────────────────────────────────────────────
 ```
@@ -141,8 +141,8 @@ It serializes the payload to JSON, POSTs it to `https://www.kwtsms.com/API/{endp
 ## Key Points
 
 - **Test mode** (`"test": "1"`): messages are queued but not delivered. Their credits are held until you delete them from the Sending Queue in your kwtsms.com account.
-- **Status in test mode**: returns `ERR030` (message stuck in queue) — this is normal.
-- **DLR for Kuwait numbers**: returns `ERR019` or `ERR021` — delivery reports are only available for international numbers.
+- **Status in test mode**: returns `ERR030` (message stuck in queue) - this is normal.
+- **DLR for Kuwait numbers**: returns `ERR019` or `ERR021` - delivery reports are only available for international numbers.
 - **Phone numbers**: digits only, international format, no `+` or `00` prefix.
 - **Timestamp**: all `unix-timestamp` values are GMT+3 (Asia/Kuwait), not UTC.
 - **Rate limit**: max 10 requests/second per IP. The example calls endpoints sequentially so this is not an issue.

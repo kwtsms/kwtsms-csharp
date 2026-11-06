@@ -1,4 +1,4 @@
-// Raw API example — call every kwtSMS endpoint directly with HttpClient.
+// Raw API example - call every kwtSMS endpoint directly with HttpClient.
 // No external libraries required, just System.Net.Http and System.Text.Json.
 //
 // This shows exactly what the KwtSMS client library does under the hood.
@@ -47,7 +47,7 @@ Dictionary<string, object> Auth() => new()
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 1. BALANCE — Check available and purchased credits
+// 1. BALANCE - Check available and purchased credits
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 1. Balance ───────────────────────────────────────────");
@@ -61,13 +61,13 @@ if (balanceResult["result"].GetString() == "OK")
 }
 else
 {
-    Console.WriteLine($"  Error: {balanceResult["code"]} — {balanceResult["description"]}");
+    Console.WriteLine($"  Error: {balanceResult["code"]} - {balanceResult["description"]}");
 }
 Console.WriteLine();
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 2. SENDER IDS — List registered sender IDs on this account
+// 2. SENDER IDS - List registered sender IDs on this account
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 2. Sender IDs ────────────────────────────────────────");
@@ -83,13 +83,13 @@ if (senderResult["result"].GetString() == "OK")
 }
 else
 {
-    Console.WriteLine($"  Error: {senderResult["code"]} — {senderResult["description"]}");
+    Console.WriteLine($"  Error: {senderResult["code"]} - {senderResult["description"]}");
 }
 Console.WriteLine();
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 3. COVERAGE — List active country prefixes
+// 3. COVERAGE - List active country prefixes
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 3. Coverage ──────────────────────────────────────────");
@@ -105,13 +105,13 @@ if (coverageResult["result"].GetString() == "OK")
 }
 else
 {
-    Console.WriteLine($"  Error: {coverageResult["code"]} — {coverageResult["description"]}");
+    Console.WriteLine($"  Error: {coverageResult["code"]} - {coverageResult["description"]}");
 }
 Console.WriteLine();
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 4. VALIDATE — Check if phone numbers are valid and routable
+// 4. VALIDATE - Check if phone numbers are valid and routable
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 4. Validate ──────────────────────────────────────────");
@@ -141,13 +141,13 @@ if (validateResult["result"].GetString() == "OK")
 }
 else
 {
-    Console.WriteLine($"  Error: {validateResult["code"]} — {validateResult["description"]}");
+    Console.WriteLine($"  Error: {validateResult["code"]} - {validateResult["description"]}");
 }
 Console.WriteLine();
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 5. SEND — Send an SMS (test mode: queued but not delivered)
+// 5. SEND - Send an SMS (test mode: queued but not delivered)
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 5. Send SMS ──────────────────────────────────────────");
@@ -174,13 +174,13 @@ if (sendResult["result"].GetString() == "OK")
 }
 else
 {
-    Console.WriteLine($"  Error: {sendResult["code"]} — {sendResult["description"]}");
+    Console.WriteLine($"  Error: {sendResult["code"]} - {sendResult["description"]}");
 }
 Console.WriteLine();
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 6. STATUS — Check message queue status (requires msg-id from send)
+// 6. STATUS - Check message queue status (requires msg-id from send)
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 6. Status ────────────────────────────────────────────");
@@ -200,7 +200,7 @@ if (msgId != null)
     else
     {
         // ERR030 is normal for test mode messages (stuck in queue)
-        Console.WriteLine($"  Error: {statusResult["code"]} — {statusResult["description"]}");
+        Console.WriteLine($"  Error: {statusResult["code"]} - {statusResult["description"]}");
     }
 }
 else
@@ -211,7 +211,7 @@ Console.WriteLine();
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 7. DLR — Delivery report (international numbers only, not Kuwait)
+// 7. DLR - Delivery report (international numbers only, not Kuwait)
 // ═══════════════════════════════════════════════════════════════════════════
 
 Console.WriteLine("── 7. Delivery Report (DLR) ─────────────────────────────");
@@ -232,7 +232,7 @@ if (msgId != null)
     else
     {
         // ERR019/ERR021 is normal for Kuwait numbers (DLR not available)
-        Console.WriteLine($"  Error: {dlrResult["code"]} — {dlrResult["description"]}");
+        Console.WriteLine($"  Error: {dlrResult["code"]} - {dlrResult["description"]}");
     }
 }
 else

@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-06
+
+Versions 0.4.0, 0.5.0 and 0.6.0 below were prepared but never published to NuGet (the latest NuGet version was 0.3.0). Their changes reach NuGet with 0.7.0: per-country phone validation, trunk prefix stripping and the security audit fixes.
+
 ### Added
-- The client sends a User-Agent `kwtsms-csharp/<version>` (name and version only, no personal data) so kwtSMS can see which integrations are in use. A new constructor overload with a sixth `appName` argument puts your app's token in front, e.g. `my-shop/2.1.0 kwtsms-csharp/0.6.0`. New `KwtSmsClient.Version` (from the assembly), `UserAgent` and `BuildUserAgent()`.
+- The client sends a User-Agent `kwtsms-csharp/<version>` (name and version only, no personal data) so kwtSMS can see which integrations are in use. A new constructor overload with a sixth `appName` argument puts your app's token in front, e.g. `my-shop/2.1.0 kwtsms-csharp/0.7.0`. New `KwtSmsClient.Version` (from the assembly), `UserAgent` and `BuildUserAgent()`.
 
 ### Changed
 

@@ -10,7 +10,7 @@
 
     <!-- NuGet Package -->
     <PackageId>KwtSMS</PackageId>
-    <Version>0.6.0</Version>
+    <Version>0.7.0</Version>
     <Authors>kwtSMS</Authors>
     <Company>kwtSMS</Company>
     <Description>C# client for the kwtSMS SMS gateway (kwtsms.com). Send SMS, check balance, validate numbers, and more. Zero dependencies on .NET 6+.</Description>

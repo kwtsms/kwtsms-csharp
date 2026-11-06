@@ -56,7 +56,7 @@ namespace KwtSMS
         /// Per-country phone validation rules.
         /// localLengths: valid digit counts AFTER the country code.
         /// mobileStartDigits: required first character(s) of the local number (null = any).
-        /// Countries not listed here pass with generic E.164 validation only (7–15 digits).
+        /// Countries not listed here pass with generic E.164 validation only (7-15 digits).
         /// </summary>
         public static readonly IReadOnlyDictionary<string, PhoneRule> PhoneRules =
             new Dictionary<string, PhoneRule>(StringComparer.Ordinal)

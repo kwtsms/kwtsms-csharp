@@ -44,7 +44,7 @@ dotnet add package KwtSMS
 Or add to your `.csproj`:
 
 ```xml
-<PackageReference Include="KwtSMS" Version="0.6.0" />
+<PackageReference Include="KwtSMS" Version="0.7.0" />
 ```
 
 ## Install
@@ -249,7 +249,7 @@ personal or customer data. Pass your own product token as the sixth constructor 
 
 ```csharp
 var sms = new KwtSmsClient(user, pass, "MY-SENDER", false, "kwtsms.log", "my-shop/2.1.0");
-// User-Agent: my-shop/2.1.0 kwtsms-csharp/0.6.0
+// User-Agent: my-shop/2.1.0 kwtsms-csharp/0.7.0
 ```
 
 ## Error Handling

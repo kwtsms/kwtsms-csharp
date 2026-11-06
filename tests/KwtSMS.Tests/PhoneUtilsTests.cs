@@ -215,7 +215,7 @@ namespace KwtSMS.Tests
         [Fact]
         public void Validate_SaudiTrunkPrefixNormalized()
         {
-            // Input with domestic trunk 0 — should normalize and validate as valid Saudi
+            // Input with domestic trunk 0 - should normalize and validate as valid Saudi
             var result = PhoneUtils.ValidatePhoneInput("9660551234567");
             Assert.True(result.IsValid);
             Assert.Equal("966551234567", result.Normalized);
@@ -303,7 +303,7 @@ namespace KwtSMS.Tests
         [Fact]
         public void ValidatePhoneFormat_UnknownCountry()
         {
-            // No rule for 999 prefix — passes through
+            // No rule for 999 prefix - passes through
             var (valid, error) = PhoneUtils.ValidatePhoneFormat("9991234567");
             Assert.True(valid);
             Assert.Null(error);
