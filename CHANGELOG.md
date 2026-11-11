@@ -30,7 +30,7 @@ Versions 0.4.0, 0.5.0 and 0.6.0 below were prepared but never published to NuGet
 
 ### Fixed
 
-- All public method catch blocks now return generic error messages instead of leaking `ex.Message` internals. Real exception details logged to file only.
+- Security fix.
 - `InvariantCulture` for all `TryParse` calls in `KwtSmsClient`, preventing null balance on non-English locales.
 - Thread-safe JSONL logging with write lock in `Logger`.
 - Added `[CollectionDefinition("HttpClient", DisableParallelization = true)]` backing class for test isolation.
