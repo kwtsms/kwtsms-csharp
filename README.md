@@ -463,6 +463,18 @@ Rules in short:
 
 Current rules, limits and credits per country: https://www.kwtsms.com/faq/send-international-sms-messages.html
 
+**6. Why does my message show "KWT-SMS" as the sender abroad?**
+
+Outside Kuwait, messages are sent with the Sender ID KWT-SMS. Your own Sender ID works in another country only if you hold an active business licence in that country (same name as in Kuwait). Inside Kuwait, your own Sender ID shows as usual.
+
+<div dir="rtl">
+
+**لماذا يظهر اسم المرسل "KWT-SMS" عند الإرسال إلى خارج الكويت؟**
+
+خارج الكويت تُرسل الرسائل باسم المرسل KWT-SMS. لا يعمل اسم المرسل الخاص بكم في دولة أخرى إلا إذا كان لديكم ترخيص تجاري ساري في تلك الدولة (بنفس الاسم المستخدم في الكويت). داخل الكويت يظهر اسم المرسل الخاص بكم كالمعتاد.
+
+</div>
+
 ## Help & Support
 
 - **[kwtSMS FAQ](https://www.kwtsms.com/faq/)**: Answers to common questions about credits, sender IDs, OTP, and delivery
