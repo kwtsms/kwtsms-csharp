@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/readme-header-dark.png">
+  <img alt="kwtSMS for C# and .NET: SMS and OTP through kwtSMS" src=".github/assets/readme-header-light.png">
+</picture>
+
 # kwtSMS C# Client
 
 [![CI](https://github.com/kwtsms/kwtsms-csharp/actions/workflows/ci.yml/badge.svg)](https://github.com/kwtsms/kwtsms-csharp/actions/workflows/ci.yml)
